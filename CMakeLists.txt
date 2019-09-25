@@ -7,4 +7,6 @@ add_executable(Hangman main.cpp
         includes/Arena.cpp includes/Arena.h
         includes/Configuration.cpp includes/Configuration.h
         includes/Game.cpp includes/Game.h
-        sources/Utils.cpp sources/Utils.h)
+        includes/Statistics.cpp includes/Statistics.h
+        sources/Utils.cpp sources/Utils.h
+        sources/Menu.cpp sources/Menu.h)

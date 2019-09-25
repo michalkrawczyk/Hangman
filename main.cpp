@@ -7,20 +7,8 @@
 
 #include "includes/Configuration.h"
 #include "includes/Game.h"
-
-namespace main_menu{
-    enum CHOICE{None, Play, Statistics, Exit};
-    void printMenu();
-    CHOICE makeChoice();
-}
-
-namespace statistics_menu{
-    void printMenu();
-    enum CHOICE{None, Exit, Back};
-    CHOICE makeChoice();
-}
-
-
+#include "includes/Statistics.h"
+#include "sources/Menu.h"
 
 
 
@@ -36,7 +24,11 @@ int main() {
         std::locale::global(std::locale(LANGUAGE));
         std::wcout << "Used Language:" << std::locale("").name().c_str();
     #endif
+
         dictionary::Configuration config;
+
+        Statistics statistics;
+        statistics.readFromFile("../data/Statistics");
 
         main_menu::printMenu();
         main_menu::CHOICE choice(main_menu::CHOICE::None);
@@ -51,30 +43,49 @@ int main() {
 
                     unsigned int min, max;
                     game_params::selectRange(config, min, max);
+                    clearScreen();
 
                     std::unique_ptr<Game> game = GameCreator()
                             .generateArena(game_params::selectDifficulty())
                             .drawMatchingWord(config.getWordList(), min, max)
                             .createGame();
 
+                    statistics.recordGame(game->get_difficulty())
+                       .writeToFile("../data/Statistics");
+
                     std::chrono::duration<double> duration = game->playGame();
-                    //Todo: Add Records
+
                     if (game->gameWon())
                     {
                         std::cout<<"Time:"<<duration.count()<<" s"<<std::endl;
                     }
 
+                    statistics.saveResult(game->get_difficulty(), game->gameWon())
+                       .newRecord(game->get_difficulty(), duration, game->gameWon())
+                       .writeToFile("../data/Statistics");
 
+                    clearScreen();
                     choice = main_menu::CHOICE::None;
                     main_menu::printMenu();
                     break;
                 }
 
                 case main_menu::CHOICE::Statistics: {
-                    //TODO:Statistics
+                    statistics.printStatistics(game_params::selectDifficulty());
 
-                    //choice = main_menu::CHOICE::None;
-                    //main_menu::printMenu();
+                    statistics_menu::printMenu();
+                    auto stats_choice(statistics_menu::CHOICE::None);
+
+                    while(stats_choice == statistics_menu::CHOICE::None)
+                        stats_choice = statistics_menu::makeChoice();
+
+                    if (stats_choice == statistics_menu::CHOICE::Back)
+                    {
+                        clearScreen();
+                        choice = main_menu::CHOICE::None;
+                        main_menu::printMenu();
+                    }
+
                     break;
                 }
 
@@ -98,33 +109,4 @@ int main() {
     }
     return 0;
 }
-
-void main_menu::printMenu()
-{
-    std::cout<<std::endl;
-    std::cout<<"Choose an option:"<<std::endl;
-    std::cout<<"    1. Play"<<std::endl;
-    std::cout<<"    2. Statistics"<<std::endl;
-    std::cout<<"    3. Exit"<<std::endl;
-}
-
-main_menu::CHOICE main_menu::makeChoice() {
-
-    unsigned int choice;
-
-    std::cout<<"Option:";
-
-    uintInsert(choice);
-
-    if (choice != CHOICE::Exit
-    && choice != CHOICE::Play
-    && choice != CHOICE::Statistics)
-    {
-        std::cout<<"Wrong Option"<<std::endl;
-        choice = CHOICE::None;
-    }
-
-    return static_cast <CHOICE> (choice);
-}
-
 
