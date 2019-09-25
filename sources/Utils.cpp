@@ -12,3 +12,13 @@ void uintInsert(unsigned int &number)
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     }
 }
+
+void clearScreen()
+{
+    #ifdef _WIN32
+        //system("cls"); //Looking for alternatives
+        for(auto i=0;i<10;i++) std::cout<<std::endl;
+    #else
+        printf("\e[1;1H\e[2J");
+    #endif
+}
