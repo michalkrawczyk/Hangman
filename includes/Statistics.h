@@ -1,5 +1,5 @@
 //
-// Created by Student235325 on 20.09.2019.
+// Created by MK on 20.09.2019.
 //
 
 #ifndef HANGMAN_STATISTICS_H
@@ -26,18 +26,21 @@ std::ostream &operator<<(std::ostream &os, const LevelStats &stats);
 
 
 class Statistics {
-    LevelStats _easy;
-    LevelStats _medium;
-    LevelStats _hard;
+    LevelStats m_easy;
+    LevelStats m_medium;
+    LevelStats m_hard;
 
 public:
     Statistics();
+
+    Statistics& rRecordGame(const DIFFICULTY &difficulty);
+    Statistics& rSaveResult(const DIFFICULTY &difficulty, const bool &win);
+    Statistics& rIsNewRecord(const DIFFICULTY &difficulty,
+                             const std::chrono::duration<double> &time,
+                             const bool &has_won);
+
     bool readFromFile(const std::string &path);
-    Statistics &recordGame(const DIFFICULTY &difficulty);
-    Statistics &saveResult(const DIFFICULTY &difficulty, const bool &win);
-    Statistics &newRecord(const DIFFICULTY &difficulty,
-                            std::chrono::duration <double> &time,
-                            const bool &win);
+
     void writeToFile(const std::string &path);
     void printStatistics(const DIFFICULTY &difficulty);
 

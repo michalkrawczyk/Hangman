@@ -31,7 +31,7 @@ int main() {
         statistics.readFromFile("../data/Statistics");
 
         main_menu::printMenu();
-        main_menu::CHOICE choice(main_menu::CHOICE::None);
+        auto choice(main_menu::CHOICE::None);
 
         while(choice == main_menu::CHOICE::None)
         {
@@ -46,22 +46,22 @@ int main() {
                     clearScreen();
 
                     std::unique_ptr<Game> game = GameCreator()
-                            .generateArena(game_params::selectDifficulty())
-                            .drawMatchingWord(config.getWordList(), min, max)
-                            .createGame();
+                            .rGenerateArena(game_params::selectDifficulty())
+                            .rDrawMatchingWord(config.rGetWordList(), min, max)
+                            .pCreateGame();
 
-                    statistics.recordGame(game->get_difficulty())
+                    statistics.rRecordGame(game->getDifficulty())
                        .writeToFile("../data/Statistics");
 
                     std::chrono::duration<double> duration = game->playGame();
 
-                    if (game->gameWon())
+                    if (game->isGameWon())
                     {
                         std::cout<<"Time:"<<duration.count()<<" s"<<std::endl;
                     }
 
-                    statistics.saveResult(game->get_difficulty(), game->gameWon())
-                       .newRecord(game->get_difficulty(), duration, game->gameWon())
+                    statistics.rSaveResult(game->getDifficulty(), game->isGameWon())
+                            .rIsNewRecord(game->getDifficulty(), duration, game->isGameWon())
                        .writeToFile("../data/Statistics");
 
                     clearScreen();
@@ -90,9 +90,7 @@ int main() {
                 }
 
                 case main_menu::CHOICE::Exit:
-                {
                     break;
-                }
 
                 default:
                 {

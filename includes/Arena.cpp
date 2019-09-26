@@ -9,10 +9,10 @@
 
 Arena::Arena()
 {
-    inititalizeBoard();
+    mInititalizeBoard();
 }
 
-void Arena::inititalizeBoard()
+void Arena::mInititalizeBoard()
 {
     wchar_t board_template[6][5] = {
             {'_', '_', '_', '_', ' '},
@@ -26,17 +26,13 @@ void Arena::inititalizeBoard()
     board.resize(6, std::vector<Field>(5));
 
     for (auto row = 0; row < board.size(); row++)
-    {
         for(auto column = 0; column < board[0].size(); column++)
         {
             wchar_t temp(' ');
             if (board_template[row][column] != ' ')
-            {
                 temp = '.';
-            }
             board[row][column] = Field(board_template[row][column], temp);
         }
-    }
 
 }
 
@@ -45,9 +41,8 @@ void Arena::printArena()
     for (auto &row:board)
     {
         for(auto &column:row)
-        {
-            std::wcout<<column.get_actual_letter();
-        }
+            std::wcout<< column.getActualLetter();
+
         std::cout<<std::endl;
     }
 }
@@ -57,34 +52,30 @@ void Arena::printArena()
  * -----------------------------------------------------------------------------------------
  *  Field Functions - Begin */
 
-Arena::Field::Field(const wchar_t &desired_letter, const wchar_t &inital_letter):
-_actual_letter(inital_letter),
-_desired_letter(desired_letter)
+Arena::Field::Field(const wchar_t &desired_letter,
+                    const wchar_t &inital_letter):
+m_actual_letter(inital_letter),
+m_desired_letter(desired_letter)
+{}
+
+wchar_t Arena::Field::getDesiredLetter() const
 {
+    return m_desired_letter;
 }
 
-wchar_t Arena::Field::get_desired_letter() const
+wchar_t Arena::Field::getActualLetter() const
 {
-    return _desired_letter;
-}
-
-wchar_t Arena::Field::get_actual_letter() const
-{
-    return _actual_letter;
+    return m_actual_letter;
 }
 
 void Arena::Field::setFieldValue()
 {
-    _actual_letter = _desired_letter;
+    m_actual_letter = m_desired_letter;
 }
 
 bool Arena::Field::isFullfiled()
 {
-    return _actual_letter == _desired_letter;
+    return m_actual_letter == m_desired_letter;
 }
-
-
-
-
 
 //  Field Functions - END

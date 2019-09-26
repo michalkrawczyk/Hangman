@@ -11,19 +11,20 @@
 
 
 class Arena {
-    void inititalizeBoard();
+    void mInititalizeBoard();
 
 public:
     explicit Arena();
 
     class Field {
-        wchar_t _desired_letter, _actual_letter;
+        wchar_t m_desired_letter, m_actual_letter;
 
     public:
-        explicit Field(const wchar_t &desired_letter = L' ',const wchar_t &inital_letter = L' ');
+        explicit Field(const wchar_t &desired_letter = L' ',
+                       const wchar_t &inital_letter = L' ');
 
-        wchar_t get_desired_letter() const;
-        wchar_t get_actual_letter() const;
+        wchar_t getDesiredLetter() const;
+        wchar_t getActualLetter() const;
 
         void setFieldValue();
 

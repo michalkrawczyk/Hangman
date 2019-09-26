@@ -10,7 +10,7 @@
 #include <fstream>
 #include <algorithm>
 
-#ifdef DEBUG
+#ifdef _DEBUG
     #include <iostream>
 #endif
 
@@ -25,17 +25,16 @@ namespace dictionary
 
 
 class dictionary::Configuration {
-    unsigned int _min_length , _max_length;
-    std::vector<std::wstring> _word_list;
+    unsigned int m_min_length , m_max_length;
+    std::vector<std::wstring> m_word_list;
 
 public:
-    Configuration();
+    explicit Configuration(const std::string &path = dictionary::getPath());
     void loadWords(const std::string &path = dictionary::getPath());
-    //Todo:Rethink Constructor and loadWords
 
     unsigned int getMinWordLength() const;
     unsigned int getMaxWordLength() const;
-    const std::vector<std::wstring> &getWordList() const;
+    const std::vector<std::wstring>& rGetWordList() const;
 };
 
 

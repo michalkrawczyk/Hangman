@@ -30,17 +30,18 @@ namespace game_params
 class Game;
 
 class GameCreator{
-    std::wstring _word;
-    Arena _arena;
-    std::wstring drawWord(const std::vector<std::wstring> &words);
-    DIFFICULTY _difficulty;
+    std::wstring m_word;
+    Arena m_arena;
+    DIFFICULTY m_difficulty;
+
+    std::wstring mDrawWord(const std::vector<std::wstring> &word_list);
 
 public:
-    std::unique_ptr<Game> createGame();
-    GameCreator &generateArena(const DIFFICULTY &difficulty);
-    GameCreator &drawMatchingWord(const std::vector<std::wstring> &collection,
-                                        const unsigned int &min_length,
-                                        const unsigned int &max_length);
+    std::unique_ptr<Game> pCreateGame();
+    GameCreator& rGenerateArena(const DIFFICULTY &difficulty);
+    GameCreator& rDrawMatchingWord(const std::vector<std::wstring> &word_list,
+                                   const unsigned int &min_length,
+                                   const unsigned int &max_length);
 
 };
 
@@ -49,29 +50,31 @@ public:
 class Game {
 
 
-    Arena _arena;
-    std::vector<wchar_t> _used_letters;
-    std::wstring _final_word;
-    std::wstring _actual_word;
-    DIFFICULTY _difficulty;
+    Arena m_arena;
+    std::vector<wchar_t> m_used_letters;
+    std::wstring m_final_word;
+    std::wstring m_actual_word;
+    DIFFICULTY m_difficulty;
 
-    bool gameLost();
+    bool mIsGameLost();
 
-    bool checkLetter(const wchar_t &letter);
-    bool usedLetter(const wchar_t &letter);
+    bool mCheckLetter(const wchar_t &letter);
+    bool mIsLetterUsed(const wchar_t &letter);
 
-    void printGameStatus();
-    void fillArena();
+    void mPrintGameStatus();
+    void mFillArena();
 
 
 public:
-    explicit Game(const Arena &arena, const std::wstring &word, const DIFFICULTY &difficulty);
+    explicit Game(const Arena &arena,
+                  const std::wstring &word,
+                  const DIFFICULTY &difficulty);
 
-    bool gameWon();
-    bool gameEnd();
+    bool isGameWon();
+    bool hasGameEnd();
     std::chrono::duration<double> playGame();
 
-    DIFFICULTY get_difficulty() const;
+    DIFFICULTY getDifficulty() const;
 
 };
 

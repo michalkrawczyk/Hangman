@@ -1,5 +1,5 @@
 //
-// Created by Student235325 on 20.09.2019.
+// Created by MK on 20.09.2019.
 //
 
 #include "Statistics.h"
@@ -16,15 +16,15 @@ std::ostream &operator<<(std::ostream &os, const LevelStats &stats) {
  *  Statistics Functions - Begin */
 
 Statistics::Statistics():
-    _easy(LevelStats{DIFFICULTY::Easy,
+    m_easy(LevelStats{DIFFICULTY::Easy,
                      std::chrono::duration<double>(-1),
                      0u,
                      0u}),
-    _medium(LevelStats{DIFFICULTY::Medium,
+    m_medium(LevelStats{DIFFICULTY::Medium,
                        std::chrono::duration<double>(-1),
                        0u,
                        0u}),
-    _hard(LevelStats{DIFFICULTY::Hard,
+    m_hard(LevelStats{DIFFICULTY::Hard,
                      std::chrono::duration<double>(-1),
                      0u,
                      0u})
@@ -32,22 +32,100 @@ Statistics::Statistics():
 
 }
 
+
+
+Statistics &Statistics::rRecordGame(const DIFFICULTY &difficulty) {
+    LevelStats *pLevels [3] = {&m_easy, &m_medium, &m_hard};
+    bool defined_level(false);
+
+    for (auto &it : pLevels)
+    {
+        if(it->level == difficulty)
+        {
+            it->games_played++;
+            defined_level = true;
+        }
+    }
+
+    if (!defined_level)
+        std::runtime_error("Statistics encountered undefined difficulty level on recording");
+
+    return *this;
+}
+
+Statistics &Statistics::rIsNewRecord(const DIFFICULTY &difficulty,
+                                     const std::chrono::duration<double> &time,
+                                     const bool &has_won) {
+    if(!has_won)
+        return *this;
+
+    LevelStats *pLevels [3] = {&m_easy, &m_medium, &m_hard};
+    bool defined_level(false);
+
+    for (auto &it : pLevels)
+    {
+        if(it->level == difficulty)
+        {
+            defined_level = true;
+
+            if((it->best_time > time) || (it->best_time <= std::chrono::duration <double>(-1)) )
+            {
+                std::cout << "Congratulations! You have set the new record: " << time.count();
+                it->best_time = time;
+            }
+        }
+    }
+
+    if (!defined_level)
+        std::runtime_error("Statistics encountered undefined difficulty level on checking best time");
+
+    return *this;
+}
+
+void Statistics::writeToFile(const std::string &path) {
+    std::ofstream file(path);
+    file << m_easy << m_medium << m_hard;
+    file.close();
+}
+
+Statistics &Statistics::rSaveResult(const DIFFICULTY &difficulty, const bool &win) {
+    if(!win)
+        return *this;
+
+    LevelStats *pLevels [3] = {&m_easy, &m_medium, &m_hard};
+    bool defined_level(false);
+
+    for (auto it : pLevels)
+    {
+        if (it->level == difficulty)
+        {
+            it->games_won++;
+            defined_level = true;
+        }
+    }
+
+    if (!defined_level)
+        std::runtime_error("Statistics encountered undefined difficulty level on checking result");
+
+    return *this;
+}
+
 bool Statistics::readFromFile(const std::string &path) {
     std::ifstream file(path);
-    LevelStats *pLevels [3]={&_easy,&_medium,&_hard};
+    LevelStats *pLevels [3]={&m_easy,&m_medium,&m_hard};
 
     if (file.good() && file.is_open())
     {
-        std::string line;
         while(!file.eof())
         {
+            std::string line;
             std::getline(file, line);
             std::stringstream ss(line);
 
             unsigned int numLevel;
             ss >> numLevel;
 
-            for(auto &it: pLevels)
+            for(auto &it : pLevels)
             {
                 if (it->level == static_cast<DIFFICULTY>(numLevel))
                 {
@@ -81,101 +159,20 @@ bool Statistics::readFromFile(const std::string &path) {
         return true;
     }
     else
-    {
         std::cout<<"Unable to open file with Statistics"<<std::endl;
 
-        return false;
-    }
-}
-
-
-Statistics &Statistics::recordGame(const DIFFICULTY &difficulty) {
-    LevelStats *pLevels [3]={&_easy,&_medium,&_hard};
-    bool defined_level(false);
-
-    for (auto &it:pLevels)
-    {
-        if(it->level == difficulty)
-        {
-            it->games_played++;
-            defined_level = true;
-        }
-    }
-
-    if (!defined_level)
-    {
-        std::runtime_error("Statistics encountered undefined difficulty level on recording");
-    }
-
-    return *this;
-}
-
-Statistics &Statistics::newRecord(const DIFFICULTY &difficulty,
-                                    std::chrono::duration<double> &time,
-                                    const bool &win) {
-    if(!win)
-        return *this;
-
-    LevelStats *pLevels [3]={&_easy,&_medium,&_hard};
-    bool defined_level(false);
-
-    for (auto &it:pLevels)
-    {
-        if(it->level == difficulty)
-        {
-            defined_level = true;
-
-            if((it->best_time > time) || (it->best_time <= std::chrono::duration <double>(-1)) )
-            {
-                std::cout<<"Congratulations! You have set the new record: "<<time.count();
-                it->best_time = time;
-            }
-        }
-    }
-
-    if (!defined_level)
-        std::runtime_error("Statistics encountered undefined difficulty level on checking best time");
-
-    return *this;
-}
-
-void Statistics::writeToFile(const std::string &path) {
-    std::ofstream file(path);
-    file << _easy << _medium << _hard;
-    file.close();
-}
-
-Statistics &Statistics::saveResult(const DIFFICULTY &difficulty, const bool &win) {
-    if(!win)
-        return *this;
-
-    LevelStats *pLevels [3] = {&_easy,&_medium,&_hard};
-    bool defined_level(false);
-
-    for (auto it: pLevels)
-    {
-        if (it->level == difficulty)
-        {
-            it->games_won++;
-            defined_level = true;
-        }
-    }
-
-    if (!defined_level)
-        std::runtime_error("Statistics encountered undefined difficulty level on checking result");
-
-    return *this;
+    return false;
 }
 
 void Statistics::printStatistics(const DIFFICULTY &difficulty) {
-    LevelStats *pLevels [3]={&_easy,&_medium,&_hard};
+    LevelStats *pLevels [3]={&m_easy,&m_medium,&m_hard};
     bool defined_level(false);
 
-    for(auto &it: pLevels)
+    for(auto &it : pLevels)
     {
         if (it->level == difficulty)
         {
-            std::cout<<*it;
+            std::cout << *it;
             defined_level = true;
         }
     }
